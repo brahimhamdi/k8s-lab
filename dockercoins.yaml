@@ -11,7 +11,7 @@ metadata:
   labels:
     tier: worker
 spec:
-  replicas: 10
+#  replicas: 10
   selector:
     matchLabels:
       tier: worker
@@ -32,7 +32,6 @@ metadata:
   labels:
     tier: rng
 spec:
-#  replicas: 3
   selector:
     matchLabels:
       tier: rng
@@ -53,7 +52,6 @@ metadata:
   labels:
     tier: hasher
 spec:
-#  replicas: 3
   selector:
     matchLabels:
       tier: hasher
@@ -65,13 +63,6 @@ spec:
       containers:
       - name: hasher
         image: brahimhamdi/hasher
-        resources:
-          requests:
-            memory: "300Mi"
-            cpu: "100m"
-          limits:
-            memory: "600Mi"
-            cpu: "200m"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -81,7 +72,6 @@ metadata:
   labels:
     tier: redis
 spec:
-#  replicas: 3
   selector:
     matchLabels:
       tier: redis
@@ -102,7 +92,6 @@ metadata:
   labels:
     tier: webui
 spec:
-#  replicas: 3
   selector:
     matchLabels:
       tier: webui
@@ -164,113 +153,3 @@ spec:
       targetPort: 80
       nodePort: 30001
   type: NodePort
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: hasher-hpa
-  namespace: dockercoins
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: hasher
-  minReplicas: 1
-  maxReplicas: 5
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: worker-netpol
-  namespace: dockercoins
-spec:
-  podSelector:
-    matchLabels:
-      tier: worker
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          tier: rng
-    ports:
-    - port: 80
-  - to:
-    - podSelector:
-        matchLabels:
-          tier: hasher
-    ports:
-    - port: 80
-  - to:
-    - podSelector:
-        matchLabels:
-          tier: redis
-    ports:
-    - port: 6379
-  - to:
-     - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kube-system
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: rng-netpol
-  namespace: dockercoins
-spec:
-  podSelector:
-    matchLabels:
-      tier: rng
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          tier: worker
-    ports:
-    - port: 80
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: hasher-netpol
-  namespace: dockercoins
-spec:
-  podSelector:
-    matchLabels:
-      tier: hasher
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          tier: worker
-    ports:
-    - port: 80
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: redis-netpol
-  namespace: dockercoins
-spec:
-  podSelector:
-    matchLabels:
-      tier: redis
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          tier: worker
-    ports:
-    - port: 6379
-  - from:
-    - podSelector:
-        matchLabels:
-          tier: webui
-    ports:
-    - port: 6379
