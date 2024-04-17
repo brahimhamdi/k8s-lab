@@ -89,8 +89,8 @@ Vagrant.configure(2) do |config|
 #    sudo apt install -y kubelet=1.28.2-1.1 kubeadm=1.28.2-1.1 kubectl=1.28.2-1.1
     sudo apt install -y kubelet kubeadm kubectl
 
-#    sudo swapoff -a
-#    sudo sed -i '/ swap / s/^/#/' /etc/fstab
+    sudo swapoff -a
+    sudo sed -i '/ swap / s/^/#/' /etc/fstab
 
     sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
 
