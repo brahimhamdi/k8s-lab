@@ -69,7 +69,7 @@ Vagrant.configure(2) do |config|
 #    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 #    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" >> ~/kubernetes.list
 #    sudo mv ~/kubernetes.list /etc/apt/sources.list.d
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
     echo "KUBELET_EXTRA_ARGS=--node-ip="$(ip addr show eth1  | awk '$1 == "inet" { print $2 }' | cut -d/ -f1) | sudo tee /etc/default/kubelet
@@ -86,15 +86,13 @@ Vagrant.configure(2) do |config|
     cd etcd-${RELEASE}-linux-amd64
     sudo mv etcd etcdctl etcdutl /usr/local/bin 
 
-    sudo apt install -y kubelet=1.28.2-1.1 kubeadm=1.28.2-1.1 kubectl=1.28.2-1.1
+#    sudo apt install -y kubelet=1.28.2-1.1 kubeadm=1.28.2-1.1 kubectl=1.28.2-1.1
+    sudo apt install -y kubelet kubeadm kubectl
 
-    sudo swapoff -a
-    sudo sed -i '/ swap / s/^/#/' /etc/fstab
+#    sudo swapoff -a
+#    sudo sed -i '/ swap / s/^/#/' /etc/fstab
 
     sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
-
-    sudo curl -L git.io/weave -o /usr/local/bin/weave
-    sudo chmod a+x /usr/local/bin/weave
 
   SHELL
 
