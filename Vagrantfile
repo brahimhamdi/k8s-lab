@@ -18,18 +18,6 @@ boxes = [
         :eth1 => "192.168.56.12",
         :mem => "2048",
         :cpu => "1"
-#    },
-#    {
-#        :name => "kube-control-plane2",
-#        :eth1 => "192.168.57.10",
-#        :mem => "2048",
-#       :cpu => "1"
-#    },
-#   {
-#        :name => "kube-node21",
-#        :eth1 => "192.168.57.11",
-#        :mem => "1024",
-#        :cpu => "1"
     }
 ]
 
@@ -86,7 +74,7 @@ Vagrant.configure(2) do |config|
     cd etcd-${RELEASE}-linux-amd64
     sudo mv etcd etcdctl etcdutl /usr/local/bin 
 
-    sudo apt install -y kubelet=1.28.2-1.1 kubeadm=1.28.2-1.1 kubectl=1.28.2-1.1
+    sudo apt install -y kubelet kubeadm kubectl
 
     sudo swapoff -a
     sudo sed -i '/ swap / s/^/#/' /etc/fstab
