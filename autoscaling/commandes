@@ -1,0 +1,10 @@
+wget https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+kubectl apply -f https://k8s.io/examples/application/php-apache.yaml
+
+kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
+
+kubectl get hpa
+
+kubectl run generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while true; do wget -q -O- http://php-apache; done"
+
