@@ -24,7 +24,7 @@ spec:
         image: brahimhamdi/worker
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: rng
   namespace: dockercoins
@@ -62,6 +62,13 @@ spec:
       containers:
       - name: hasher
         image: brahimhamdi/hasher
+        resources:
+          requests:
+            memory: "300Mi"
+            cpu: "0.1"
+          limits:
+            memory: "600Mi"
+            cpu: "0.2"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -152,3 +159,23 @@ spec:
       targetPort: 80
       nodePort: 30002
   type: NodePort
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: autoscale-hasher
+  namespace: dockercoins
+spec:
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hasher
