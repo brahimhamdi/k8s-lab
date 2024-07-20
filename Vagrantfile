@@ -10,13 +10,13 @@ boxes = [
     {
         :name => "kube-node1",
         :eth1 => "192.168.56.11",
-        :mem => "2048",
+        :mem => "1024",
         :cpu => "1"
     },
     {
         :name => "kube-node2",
         :eth1 => "192.168.56.12",
-        :mem => "2048",
+        :mem => "1024",
         :cpu => "1"
     }
 ]
@@ -57,8 +57,8 @@ Vagrant.configure(2) do |config|
 #    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 #    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" >> ~/kubernetes.list
 #    sudo mv ~/kubernetes.list /etc/apt/sources.list.d
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
     echo "KUBELET_EXTRA_ARGS=--node-ip="$(ip addr show eth1  | awk '$1 == "inet" { print $2 }' | cut -d/ -f1) | sudo tee /etc/default/kubelet
 
