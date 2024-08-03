@@ -68,7 +68,7 @@ Vagrant.configure(2) do |config|
     sudo systemctl restart containerd
 
     # Install Docker
-    sudo apt install -y docker.io
+    sudo apt install -y docker.ce
 
     # Install etcdctl
     export RELEASE=$(curl -s https://api.github.com/repos/etcd-io/etcd/releases/latest|grep tag_name | cut -d '"' -f 4)
