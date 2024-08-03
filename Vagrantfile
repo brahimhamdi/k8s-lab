@@ -4,7 +4,7 @@ boxes = [
     {
         :name => "kube-control-plane",
         :eth1 => "192.168.56.10",
-        :mem => "2048",
+        :mem => "3072",
         :cpu => "2"
     },
     {
@@ -12,12 +12,12 @@ boxes = [
         :eth1 => "192.168.56.11",
         :mem => "1024",
         :cpu => "1"
-    },
-    {
-        :name => "kube-node2",
-        :eth1 => "192.168.56.12",
-        :mem => "1024",
-        :cpu => "1"
+#    },
+#    {
+#        :name => "kube-node2",
+#        :eth1 => "192.168.56.12",
+#        :mem => "1024",
+#        :cpu => "1"
     }
 ]
 
@@ -80,6 +80,13 @@ Vagrant.configure(2) do |config|
     sudo sed -i '/ swap / s/^/#/' /etc/fstab
 
     sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
+    
+    # Install Jenkins
+    sudo apt install -y openjdk-17-jdk
+    sudo wget -O /usr/share/keyrings/jenkins-keyring.asc  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]"  https://pkg.jenkins.io/debian-stable binary/ | sudo tee  /etc/apt/sources.list.d/jenkins.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install jenkins
 
   SHELL
 
