@@ -4,7 +4,7 @@ boxes = [
     {
         :name => "kube-control-plane",
         :eth1 => "192.168.56.10",
-        :mem => "3072",
+        :mem => "2048",
         :cpu => "2"
     },
     {
@@ -12,12 +12,12 @@ boxes = [
         :eth1 => "192.168.56.11",
         :mem => "1024",
         :cpu => "1"
-#    },
-#    {
-#        :name => "kube-node2",
-#        :eth1 => "192.168.56.12",
-#        :mem => "1024",
-#        :cpu => "1"
+    },
+    {
+        :name => "kube-node2",
+        :eth1 => "192.168.56.12",
+        :mem => "1024",
+        :cpu => "1"
     }
 ]
 
@@ -40,6 +40,21 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell", inline: <<-SHELL
+
+# setup terminal ############################################################
+    apt --allow-unauthenticated update
+    apt --allow-unauthenticated install -y bash-completion binutils
+    echo 'colorscheme ron' >> ~/.vimrc
+    echo 'set tabstop=2' >> ~/.vimrc
+    echo 'set shiftwidth=2' >> ~/.vimrc
+    echo 'set expandtab' >> ~/.vimrc
+    echo 'source <(kubectl completion bash)' >> ~/.bashrc
+    echo 'alias k=kubectl' >> ~/.bashrc
+    echo 'alias c=clear' >> ~/.bashrc
+    echo 'complete -F __start_kubectl k' >> ~/.bashrc
+    sed -i '1s/^/force_color_prompt=yes\n/' ~/.bashrc
+
+# modules & fonctionnalities #################################################
     sudo modprobe overlay
     sudo modprobe br_netfilter
     sudo echo 'overlay' > /etc/modules-load.d/containerd.conf
@@ -49,47 +64,49 @@ Vagrant.configure(2) do |config|
     sudo echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.d/kubernetes.conf
     sudo sysctl --system
 
+### install podman #########################################################
+. /etc/os-release
+echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:testing.list
+curl -L "http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key" | sudo apt-key add -
+apt-get update -qq
+apt-get -qq -y install podman cri-tools containers-common
+rm /etc/apt/sources.list.d/devel:kubic:libcontainers:testing.list
+cat <<EOF | sudo tee /etc/containers/registries.conf
+[registries.search]
+registries = ['docker.io']
+EOF
+
+
+# Install & config containerd #################################################
     sudo apt update
     sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
-#    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-#    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" >> ~/kubernetes.list
-#    sudo mv ~/kubernetes.list /etc/apt/sources.list.d
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-    sudo apt update
-    echo "KUBELET_EXTRA_ARGS=--node-ip="$(ip addr show eth1  | awk '$1 == "inet" { print $2 }' | cut -d/ -f1) | sudo tee /etc/default/kubelet
-
     sudo apt install -y containerd.io
     sudo containerd config default | sudo tee /etc/containerd/config.toml
     sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
     sudo systemctl restart containerd
+    sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
 
-    # Install Docker
-    sudo apt install -y docker-ce
 
-    # Install etcdctl
+# Install etcdctl ####################################################################
     export RELEASE=$(curl -s https://api.github.com/repos/etcd-io/etcd/releases/latest|grep tag_name | cut -d '"' -f 4)
     wget https://github.com/etcd-io/etcd/releases/download/${RELEASE}/etcd-${RELEASE}-linux-amd64.tar.gz
     tar xvf etcd-${RELEASE}-linux-amd64.tar.gz
     cd etcd-${RELEASE}-linux-amd64
     sudo mv etcd etcdctl etcdutl /usr/local/bin 
 
+# Install kubernetes #################################################################
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    sudo apt update
+#    echo "KUBELET_EXTRA_ARGS=--node-ip="$(ip addr show eth1  | awk '$1 == "inet" { print $2 }' | cut -d/ -f1) | sudo tee /etc/default/kubelet
+
     sudo apt install -y kubelet kubeadm kubectl
 
     sudo swapoff -a
-    sudo sed -i '/ swap / s/^/#/' /etc/fstab
-
-    sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
-    
-    # Install Jenkins
-    sudo apt install -y openjdk-17-jdk
-    sudo wget -O /usr/share/keyrings/jenkins-keyring.asc  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-    echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]"  https://pkg.jenkins.io/debian-stable binary/ | sudo tee  /etc/apt/sources.list.d/jenkins.list > /dev/null
-    sudo apt-get update
-    sudo apt-get install -y jenkins
+    sudo sed -i '/\sswap\s/ s/^\(.*\)$/#\1/g' /etc/fstab
 
   SHELL
 
