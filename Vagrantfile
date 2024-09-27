@@ -64,18 +64,6 @@ Vagrant.configure(2) do |config|
     sudo echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.d/kubernetes.conf
     sudo sysctl --system
 
-### install podman #########################################################
-. /etc/os-release
-echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:testing.list
-curl -L "http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key" | sudo apt-key add -
-apt-get update -qq
-apt-get -qq -y install podman cri-tools containers-common
-rm /etc/apt/sources.list.d/devel:kubic:libcontainers:testing.list
-cat <<EOF | sudo tee /etc/containers/registries.conf
-[registries.search]
-registries = ['docker.io']
-EOF
-
 
 # Install & config containerd #################################################
     sudo apt update
@@ -90,16 +78,9 @@ EOF
     sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
 
 
-# Install etcdctl ####################################################################
-    export RELEASE=$(curl -s https://api.github.com/repos/etcd-io/etcd/releases/latest|grep tag_name | cut -d '"' -f 4)
-    wget https://github.com/etcd-io/etcd/releases/download/${RELEASE}/etcd-${RELEASE}-linux-amd64.tar.gz
-    tar xvf etcd-${RELEASE}-linux-amd64.tar.gz
-    cd etcd-${RELEASE}-linux-amd64
-    sudo mv etcd etcdctl etcdutl /usr/local/bin 
-
 # Install kubernetes #################################################################
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
 
     sudo apt install -y kubelet kubeadm kubectl
