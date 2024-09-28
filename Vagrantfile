@@ -85,6 +85,8 @@ Vagrant.configure(2) do |config|
 
     sudo apt install -y kubelet kubeadm kubectl
 
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
+
     sudo swapoff -a
     sudo sed -i '/\sswap\s/ s/^\(.*\)$/#\1/g' /etc/fstab
 
