@@ -78,7 +78,7 @@ Vagrant.configure(2) do |config|
     sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
 
 
-# Install kubernetes #################################################################
+# Install kubernetes & HELM ##############################################################
     echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
@@ -86,6 +86,8 @@ Vagrant.configure(2) do |config|
     sudo apt install -y kubelet kubeadm kubectl
 
     echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+    sudo snap install helm --classic
 
     sudo swapoff -a
     sudo sed -i '/\sswap\s/ s/^\(.*\)$/#\1/g' /etc/fstab
