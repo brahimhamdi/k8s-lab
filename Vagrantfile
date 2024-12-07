@@ -11,13 +11,13 @@ boxes = [
         :name => "kube-node1",
         :eth1 => "192.168.56.11",
         :mem => "2048",
-        :cpu => "1"
+        :cpu => "2"
     },
     {
         :name => "kube-node2",
         :eth1 => "192.168.56.12",
         :mem => "2048",
-        :cpu => "1"
+        :cpu => "2"
     }
 ]
 
@@ -82,6 +82,14 @@ Vagrant.configure(2) do |config|
     echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
+
+# Install etcdctl
+    export RELEASE=$(curl -s https://api.github.com/repos/etcd-io/etcd/releases/latest|grep tag_name | cut -d '"' -f 4)
+    wget https://github.com/etcd-io/etcd/releases/download/${RELEASE}/etcd-${RELEASE}-linux-amd64.tar.gz
+    tar xvf etcd-${RELEASE}-linux-amd64.tar.gz
+    cd etcd-${RELEASE}-linux-amd64
+    sudo mv etcd etcdctl etcdutl /usr/local/bin
+
 
     sudo apt install -y kubelet kubeadm kubectl
 
