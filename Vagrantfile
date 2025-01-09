@@ -78,7 +78,7 @@ Vagrant.configure(2) do |config|
     sudo crictl config runtime-endpoint unix:///run/containerd/containerd.sock
 
 
-# Install kubernetes & HELM ##############################################################
+# Install kubernetes ##############################################################
     echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
@@ -94,8 +94,15 @@ Vagrant.configure(2) do |config|
     sudo apt install -y kubelet kubeadm kubectl
 
     echo "source <(kubectl completion bash)" >> ~/.bashrc
-
+ # Install Helm
     sudo snap install helm --classic
+    echo "source <(helm completion bash)" >> ~/.bashrc
+
+# Install Kustomize
+    wget  "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
+    chmod +x install_kustomize.sh 
+    ./install_kustomize.sh
+    sudo mv kustomize /usr/bin/
 
     sudo swapoff -a
     sudo sed -i '/\sswap\s/ s/^\(.*\)$/#\1/g' /etc/fstab
