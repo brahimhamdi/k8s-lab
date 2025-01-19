@@ -106,6 +106,9 @@ Vagrant.configure(2) do |config|
 
     sudo swapoff -a
     sudo sed -i '/\sswap\s/ s/^\(.*\)$/#\1/g' /etc/fstab
+    echo 'set expandtab' >> /etc/vim/vimrc
+    echo 'set tabstop=2' >> /etc/vim/vimrc
+    echo 'set shiftwidth=2' >> /etc/vim/vimrc
 
   SHELL
 
