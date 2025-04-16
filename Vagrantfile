@@ -4,19 +4,19 @@ boxes = [
     {
         :name => "kube-control-plane",
         :eth1 => "192.168.56.10",
-        :mem => "4096",
+        :mem => "2048",
         :cpu => "2"
     },
     {
         :name => "kube-node1",
         :eth1 => "192.168.56.11",
-        :mem => "4096",
+        :mem => "2048",
         :cpu => "1"
     },
     {
         :name => "kube-node2",
         :eth1 => "192.168.56.12",
-        :mem => "4096",
+        :mem => "2048",
         :cpu => "1"
     }
 ]
@@ -80,7 +80,7 @@ Vagrant.configure(2) do |config|
 
 # Install kubernetes ##############################################################
     echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
 
 # Install etcdctl
