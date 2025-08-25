@@ -4,8 +4,8 @@ boxes = [
     {
         :name => "kube-control-plane",
         :eth1 => "192.168.56.10",
-        :mem => "2048",
-        :cpu => "2"
+        :mem => "6144",
+        :cpu => "4"
     },
     {
         :name => "kube-node1",
@@ -79,8 +79,8 @@ Vagrant.configure(2) do |config|
 
 
 # Install kubernetes ##############################################################
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     sudo apt update
 
 # Install etcdctl
@@ -109,7 +109,7 @@ Vagrant.configure(2) do |config|
     echo 'set expandtab' >> /etc/vim/vimrc
     echo 'set tabstop=2' >> /etc/vim/vimrc
     echo 'set shiftwidth=2' >> /etc/vim/vimrc
-    sudo apt install -y git
+    sudo apt install -y git openjdk-17-jdk maven
 
   SHELL
 
