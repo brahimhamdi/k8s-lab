@@ -90,7 +90,7 @@ Vagrant.configure(2) do |config|
         sudo mv etcd etcdctl etcdutl /usr/local/bin
         cd ..
 
-        sudo apt install -y kubelet kubeadm kubecolor kubectx
+        sudo apt install -y kubelet kubeadm kubecolor
 
         # swap off
         sudo swapoff -a
