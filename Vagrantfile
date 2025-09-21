@@ -97,7 +97,7 @@ Vagrant.configure(2) do |config|
 
       SHELL
 
-      # Provision only control-plane (Helm + Kustomize + docker + openjdk + maven + ...)
+      # Provision only control-plane (Helm + Kustomize + docker + openjdk + maven + mariadb-client, ...)
       if opts[:name] == "kube-control-plane"
         node.vm.provision "shell", inline: <<-SHELL
 
@@ -106,7 +106,7 @@ Vagrant.configure(2) do |config|
           echo "source <(kubectl completion bash)" >> ~/.bashrc
 
           # Install Docker, openjdk, maven, ...
-          sudo apt install -y git docker-ce openjdk-17-jdk maven 
+          sudo apt install -y git docker-ce openjdk-17-jdk maven mariadb-client
           sudo usermod -aG docker vagrant
 
           # Install Helm
