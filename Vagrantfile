@@ -82,15 +82,7 @@ Vagrant.configure(2) do |config|
         curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
         sudo apt update
 
-        # Install etcdctl
-        RELEASE=$(curl -s https://api.github.com/repos/etcd-io/etcd/releases/latest|grep tag_name | cut -d '"' -f 4)
-        wget https://github.com/etcd-io/etcd/releases/download/${RELEASE}/etcd-${RELEASE}-linux-amd64.tar.gz
-        tar xvf etcd-${RELEASE}-linux-amd64.tar.gz
-        cd etcd-${RELEASE}-linux-amd64
-        sudo mv etcd etcdctl etcdutl /usr/local/bin
-        cd ..
-
-        sudo apt install -y kubelet kubeadm kubecolor
+        sudo apt install -y kubelet kubeadm
 
         # swap off
         sudo swapoff -a
