@@ -101,6 +101,15 @@ Vagrant.configure(2) do |config|
           sudo apt install -y git docker-ce openjdk-17-jdk maven mariadb-client
           sudo usermod -aG docker vagrant
 
+          # Install etcdctl
+          RELEASE=$(curl -s https://api.github.com/repos/etcd-io/etcd/releases/latest|grep tag_name | cut -d '"' -f 4)
+          wget https://github.com/etcd-io/etcd/releases/download/${RELEASE}/etcd-${RELEASE}-linux-amd64.tar.gz
+          tar xvf etcd-${RELEASE}-linux-amd64.tar.gz
+          cd etcd-${RELEASE}-linux-amd64
+          sudo mv etcd etcdctl etcdutl /usr/local/bin
+          cd
+
+
           # Install Helm
           sudo snap install helm --classic
           echo "source <(helm completion bash)" >> ~/.bashrc
