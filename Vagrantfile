@@ -86,6 +86,8 @@ Vagrant.configure(2) do |config|
 
         # swap off
         sudo swapoff -a
+        sudo sed -i '/swap/s/^/#/' /etc/fstab
+        sudo rm -f /swap.img
 
       SHELL
 
