@@ -5,7 +5,7 @@ boxes = [
       :name => "kube-control-plane",
       :eth1 => "192.168.56.10",
       :mem => "4096",
-      :cpu => "4"
+      :cpu => "2"
   },
   {
       :name => "kube-node1",
