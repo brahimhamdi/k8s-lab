@@ -23,16 +23,20 @@ boxes = [
 
 Vagrant.configure(2) do |config|
   config.vm.box = "generic/ubuntu2204"
-
+  
   config.vbguest.auto_update = false if Vagrant.has_plugin?("vagrant-vbguest")
 
   boxes.each do |opts|
     config.vm.define opts[:name] do |node|
       node.vm.hostname = opts[:name]
-
-      node.ssh.connect_timeout = 60
-      node.ssh.keep_alive = true
-
+  
+      config.ssh.connect_timeout = 600
+      config.ssh.keep_alive = true
+      config.ssh.insert_key = false
+      config.ssh.verify_host_key = false
+      config.ssh.forward_agent = false
+      config.ssh.forward_x11 = false
+  
       node.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--memory", opts[:mem]]
         v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
