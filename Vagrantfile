@@ -30,6 +30,9 @@ Vagrant.configure(2) do |config|
     config.vm.define opts[:name] do |node|
       node.vm.hostname = opts[:name]
 
+      node.ssh.connect_timeout = 60
+      node.ssh.keep_alive = true
+
       node.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--memory", opts[:mem]]
         v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
