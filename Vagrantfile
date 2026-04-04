@@ -22,7 +22,7 @@ boxes = [
 ]
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "generic/ubuntu2204"
+  config.vm.box = "ubuntu64/noble64"
   
   config.vbguest.auto_update = false if Vagrant.has_plugin?("vagrant-vbguest")
 
